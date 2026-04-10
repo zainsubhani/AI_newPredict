@@ -1,3 +1,5 @@
+"""Configuration models and defaults used by the pipeline."""
+
 from __future__ import annotations
 
 import os
@@ -8,6 +10,7 @@ from typing import Optional
 
 @dataclass
 class Settings:
+    """Runtime configuration sourced from environment variables and CLI values."""
     openai_api_key: str = field(default_factory=lambda: os.getenv("OPENAI_API_KEY", ""))
     openai_model: str = field(default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4.1-mini"))
     input_path: Optional[Path] = None

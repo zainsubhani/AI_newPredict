@@ -1,3 +1,5 @@
+"""Article classification logic with OpenAI and heuristic fallback paths."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -12,6 +14,7 @@ from utils import clamp, dedupe_preserve_order, extract_json_object, lowercase_t
 
 @dataclass
 class ClassificationResult:
+    """Normalized classification output consumed by CSV export."""
     event_labels: List[str]
     physical_score: float
     escalation_score: float
@@ -35,11 +38,13 @@ class ClassificationResult:
 
 
 class ArticleClassifier:
+    """Classify article risk signals using model inference or heuristics."""
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
         self._client = None
 
     def classify(self, article: Dict[str, str], triage_labels: List[str], triage_keywords: List[str]) -> ClassificationResult:
+        """Run primary classification flow and fallback safely on API errors."""
         if self.settings.use_llm and self.settings.openai_api_key:
             try:
                 return self._classify_with_openai(article, triage_labels, triage_keywords)
@@ -62,6 +67,7 @@ class ArticleClassifier:
         triage_labels: List[str],
         triage_keywords: List[str],
     ) -> ClassificationResult:
+        """Request structured classification output from the OpenAI Responses API."""
         client = self._client_instance()
         response = client.responses.create(
             model=self.settings.openai_model,
@@ -94,6 +100,7 @@ class ArticleClassifier:
         triage_labels: List[str],
         triage_keywords: List[str],
     ) -> ClassificationResult:
+        """Compute conservative scores from rule-based keyword signals."""
         content = lowercase_text(article.get("content", ""))
         operational_terms = [
             "attack",

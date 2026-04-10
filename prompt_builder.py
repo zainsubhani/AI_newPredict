@@ -1,3 +1,5 @@
+"""Prompt and schema builders used for structured model classification."""
+
 from __future__ import annotations
 
 import json
@@ -7,6 +9,7 @@ from triage import EVENT_TAXONOMY
 
 
 def build_system_prompt() -> str:
+    """Construct the system prompt including allowed taxonomy labels."""
     taxonomy_lines = []
     for label, keywords in EVENT_TAXONOMY.items():
         taxonomy_lines.append(f"- {label}: {', '.join(keywords)}")
@@ -24,6 +27,7 @@ def build_system_prompt() -> str:
 
 
 def build_user_prompt(article: Dict[str, str], triage_labels: List[str], keywords_detected: List[str], max_chars: int) -> str:
+    """Build a compact JSON payload prompt for a single article."""
     content = (article.get("content") or "")[:max_chars]
     payload = {
         "pubDate": article.get("pubDate", ""),
@@ -42,6 +46,7 @@ def build_user_prompt(article: Dict[str, str], triage_labels: List[str], keyword
 
 
 def classifier_schema() -> dict:
+    """Return strict JSON schema expected from model output."""
     return {
         "name": "macro_risk_article_classification",
         "schema": {

@@ -1,3 +1,5 @@
+"""Keyword triage logic for mapping article text to event taxonomy labels."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -182,6 +184,7 @@ EVENT_RULES = {
 
 @dataclass
 class TriageResult:
+    """Structured output of stage-one keyword triage."""
     is_candidate: bool
     event_labels: List[str]
     keywords_detected: List[str]
@@ -189,15 +192,18 @@ class TriageResult:
 
 
 def _contains_phrase(text: str, phrase: str) -> bool:
+    """Return True when phrase appears as a standalone token sequence."""
     pattern = re.compile(rf"(?<!\w){re.escape(phrase.lower())}(?!\w)")
     return bool(pattern.search(text))
 
 
 def _find_hits(text: str, phrases: List[str]) -> List[str]:
+    """Collect phrases that are present in the provided text."""
     return [phrase for phrase in phrases if _contains_phrase(text, phrase)]
 
 
 def triage_article(content: str, min_keyword_hits: int = 1) -> TriageResult:
+    """Apply event-specific matching rules and return triage outcome."""
     haystack = lowercase_text(content)
     matched_labels: List[str] = []
     matched_keywords: List[str] = []

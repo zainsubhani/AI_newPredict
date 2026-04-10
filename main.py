@@ -1,3 +1,5 @@
+"""Command-line entrypoint for the news risk enrichment pipeline."""
+
 # This postpones evaluation of type hints and keeps annotations flexible.
 from __future__ import annotations
 
@@ -18,6 +20,7 @@ from utils import to_json_list
 
 # Parse CLI arguments so the script can be run from the terminal.
 def parse_args() -> argparse.Namespace:
+    """Parse command-line options for input, output, and runtime behavior."""
     # Create the parser and describe what this script does.
     parser = argparse.ArgumentParser(description="Classify macro-risk geopolitical news from a CSV file.")
     # Required path to the source CSV.
@@ -45,6 +48,7 @@ def parse_args() -> argparse.Namespace:
 
 # Run the full enrichment pipeline across all rows.
 def enrich_rows(settings: Settings) -> List[Dict[str, str]]:
+    """Run triage and classification for each row and return enriched results."""
     # Load the input CSV rows.
     rows = read_csv_rows(settings.input_path, max_rows=settings.max_rows)
     # Create the classifier once and reuse it for all articles.
@@ -83,6 +87,7 @@ def enrich_rows(settings: Settings) -> List[Dict[str, str]]:
 
 # Main entry point when the script is run from the terminal.
 def main() -> None:
+    """Build runtime settings, execute processing, and write the output CSV."""
     # Read command-line options.
     args = parse_args()
     # Convert CLI arguments into a single settings object.
