@@ -28,4 +28,5 @@ outputs/*.csv
 
 # Optional local data copies if you do not want to commit datasets
 data/*.csv
+!data/evaluation_sample.csv
 .env

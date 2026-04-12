@@ -181,6 +181,43 @@ EVENT_RULES = {
     },
 }
 
+MARKET_COMMENTARY_TERMS = [
+    "etf",
+    "shares",
+    "portfolio",
+    "dividend",
+    "expense ratio",
+    "index fund",
+    "ticker",
+    "nyse",
+    "nasdaq",
+    "year-to-date",
+    "ytd",
+    "earnings",
+    "cash flows",
+]
+
+STRONG_OPERATIONAL_TERMS = [
+    "attack",
+    "attacks",
+    "strike",
+    "struck",
+    "missile",
+    "drone",
+    "closed",
+    "blocked",
+    "blockade",
+    "halted",
+    "seized",
+    "damaged",
+    "fires",
+    "troops",
+    "ground operations",
+    "intercepted",
+    "wounded",
+    "killed",
+]
+
 
 @dataclass
 class TriageResult:
@@ -200,6 +237,15 @@ def _contains_phrase(text: str, phrase: str) -> bool:
 def _find_hits(text: str, phrases: List[str]) -> List[str]:
     """Collect phrases that are present in the provided text."""
     return [phrase for phrase in phrases if _contains_phrase(text, phrase)]
+
+
+def _looks_like_market_commentary_noise(text: str, labels: List[str]) -> bool:
+    """Identify investment articles that mention the taxonomy without new event evidence."""
+    if set(labels) != {"Hormuz Closure"}:
+        return False
+    market_hits = _find_hits(text, MARKET_COMMENTARY_TERMS)
+    operational_hits = _find_hits(text, STRONG_OPERATIONAL_TERMS)
+    return len(market_hits) >= 2 and not operational_hits
 
 
 def triage_article(content: str, min_keyword_hits: int = 1) -> TriageResult:
@@ -231,6 +277,9 @@ def triage_article(content: str, min_keyword_hits: int = 1) -> TriageResult:
             matched_keywords.extend(event_hits)
 
     matched_keywords = dedupe_preserve_order(matched_keywords)
+    if _looks_like_market_commentary_noise(haystack, matched_labels):
+        matched_labels = []
+        matched_keywords = []
     is_candidate = len(matched_keywords) >= min_keyword_hits
     return TriageResult(
         is_candidate=is_candidate,

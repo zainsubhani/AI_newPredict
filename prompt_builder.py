@@ -19,6 +19,10 @@ def build_system_prompt() -> str:
         "You are classifying news articles for geopolitical macro-risk.\n"
         "Be conservative and optimize for high precision.\n"
         "Do not treat rhetoric, opinion, speculation, or generic market commentary as a real event unless the article describes a reported operational development.\n"
+        "Use the article's main news claim, not incidental background context, to decide event labels.\n"
+        "Assign low evidence_score when the article is about prices, ETFs, equities, forecasts, or commentary and only repeats known disruption context.\n"
+        "Prefer an empty event_labels list when the text lacks a concrete reported action such as an attack, closure, seizure, deployment, damage, or operational halt.\n"
+        "Keep the rationale to one or two concise sentences citing the strongest evidence or the reason for rejecting the article.\n"
         "Use only the five allowed event labels, and return an empty list when the article is noise.\n"
         "The risk_score must be based on the provided component scores using the exact weighted formula.\n"
         "Allowed taxonomy:\n"
@@ -60,13 +64,13 @@ def classifier_schema() -> dict:
                         "enum": list(EVENT_TAXONOMY.keys()),
                     },
                 },
-                "physical_score": {"type": "number", "minimum": 0, "maximum": 1},
-                "escalation_score": {"type": "number", "minimum": 0, "maximum": 1},
-                "evidence_score": {"type": "number", "minimum": 0, "maximum": 1},
-                "signal_score": {"type": "number", "minimum": 0, "maximum": 1},
-                "model_score": {"type": "number", "minimum": 0, "maximum": 1},
-                "risk_score": {"type": "number", "minimum": 0, "maximum": 1},
-                "confidence_score": {"type": "number", "minimum": 0, "maximum": 1},
+                "physical_score": {"type": "number"},
+                "escalation_score": {"type": "number"},
+                "evidence_score": {"type": "number"},
+                "signal_score": {"type": "number"},
+                "model_score": {"type": "number"},
+                "risk_score": {"type": "number"},
+                "confidence_score": {"type": "number"},
                 "rationale": {"type": "string"},
                 "keywords_detected": {
                     "type": "array",

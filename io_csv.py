@@ -10,6 +10,11 @@ def read_csv_rows(path: Path, max_rows: Optional[int] = None) -> List[Dict[str, 
     """Read CSV rows into dictionaries, optionally limiting row count."""
     with path.open("r", newline="", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
+        if not reader.fieldnames:
+            raise ValueError(f"Input CSV has no header row: {path}")
+        if "content" not in reader.fieldnames:
+            raise ValueError("Input CSV must include a 'content' column.")
+
         rows: List[Dict[str, str]] = []
 
         for index, row in enumerate(reader):
@@ -31,6 +36,5 @@ def write_enriched_csv(path: Path, rows: List[Dict[str, str]]) -> None:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
-
 
 

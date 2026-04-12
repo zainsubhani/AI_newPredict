@@ -45,6 +45,8 @@ class ArticleClassifier:
 
     def classify(self, article: Dict[str, str], triage_labels: List[str], triage_keywords: List[str]) -> ClassificationResult:
         """Run primary classification flow and fallback safely on API errors."""
+        if not triage_labels and not triage_keywords:
+            return self._heuristic_classify(article, triage_labels, triage_keywords)
         if self.settings.use_llm and self.settings.openai_api_key:
             try:
                 return self._classify_with_openai(article, triage_labels, triage_keywords)
@@ -69,6 +71,7 @@ class ArticleClassifier:
     ) -> ClassificationResult:
         """Request structured classification output from the OpenAI Responses API."""
         client = self._client_instance()
+        schema = classifier_schema()
         response = client.responses.create(
             model=self.settings.openai_model,
             input=[
@@ -88,7 +91,14 @@ class ArticleClassifier:
                     ],
                 },
             ],
-            text={"format": {"type": "json_schema", "name": classifier_schema()["name"], "schema": classifier_schema()["schema"], "strict": True}},
+            text={
+                "format": {
+                    "type": "json_schema",
+                    "name": schema["name"],
+                    "schema": schema["schema"],
+                    "strict": schema["strict"],
+                }
+            },
         )
 
         payload = extract_json_object(response.output_text)
