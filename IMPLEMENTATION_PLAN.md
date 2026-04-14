@@ -12,6 +12,7 @@
 - Add required project documentation.
 - Add an optional triage refinement for investment-commentary false positives.
 - Add an optional manual evaluation sample and cost-awareness note.
+- Add focused unit tests for scoring, triage false-positive handling, and CSV schema validation.
 
 ## Operating Assumptions
 
@@ -22,7 +23,6 @@
 
 ## Future Improvements
 
-- Add unit tests around triage rules and score formulas.
 - Add retry/backoff behavior for transient OpenAI API failures.
 - Add batch-size and resume options for very large CSV files.
 - Add a formal `SPEC.md` once the assignment specification is available in the repository.

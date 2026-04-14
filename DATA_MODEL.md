@@ -2,17 +2,14 @@
 
 ## Input CSV
 
-Required column:
-
-- `content`: article text to classify.
-
-Optional columns used when present:
+Required columns:
 
 - `pubDate`: publication timestamp.
 - `link`: article URL.
+- `content`: article text to classify.
 - `source_id`: source identifier.
 
-All input columns are preserved in the output.
+Additional input columns are preserved in the output.
 
 ## Event Taxonomy
 

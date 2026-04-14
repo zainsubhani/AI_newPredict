@@ -32,3 +32,10 @@ DEFAULT_OUTPUT_COLUMNS = [
     "rationale",
     "keywords_detected",
 ]
+
+REQUIRED_INPUT_COLUMNS = [
+    "pubDate",
+    "link",
+    "content",
+    "source_id",
+]

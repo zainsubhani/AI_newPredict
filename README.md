@@ -29,9 +29,12 @@ The pipeline follows the requested structure:
 
 The input CSV must include:
 
+- `pubDate`: publication datetime.
+- `link`: article URL.
 - `content`: article text.
+- `source_id`: source identifier.
 
-Optional metadata columns such as `pubDate`, `link`, and `source_id` are passed through to the output.
+Additional metadata columns are passed through to the output when present.
 
 ## Output
 
@@ -68,13 +71,14 @@ If `OPENAI_API_KEY` is missing or `--disable-llm` is used, the pipeline runs wit
 ## Run
 
 ```bash
-python3 main.py --input data/newsdata_oil.csv --output outputs/result.csv
+python3 main.py --input data/evaluation_sample.csv --output outputs/result.csv
 ```
 
 Useful options:
 
 ```bash
-python3 main.py --input data/newsdata_oil.csv --output outputs/sample.csv --max-rows 25
-python3 main.py --input data/newsdata_oil.csv --output outputs/offline.csv --disable-llm
-python3 main.py --input data/newsdata_oil.csv --output outputs/strict.csv --triage-min-keyword-hits 2
+python3 main.py --input data/evaluation_sample.csv --output outputs/sample.csv --max-rows 25
+python3 main.py --input data/evaluation_sample.csv --output outputs/offline.csv --disable-llm
+python3 main.py --input data/evaluation_sample.csv --output outputs/strict.csv --triage-min-keyword-hits 2
+python3 -m unittest discover
 ```

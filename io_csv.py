@@ -4,7 +4,7 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 from typing import Dict, List, Optional
-from config import DEFAULT_OUTPUT_COLUMNS
+from config import DEFAULT_OUTPUT_COLUMNS, REQUIRED_INPUT_COLUMNS
 
 def read_csv_rows(path: Path, max_rows: Optional[int] = None) -> List[Dict[str, str]]:
     """Read CSV rows into dictionaries, optionally limiting row count."""
@@ -12,8 +12,11 @@ def read_csv_rows(path: Path, max_rows: Optional[int] = None) -> List[Dict[str, 
         reader = csv.DictReader(handle)
         if not reader.fieldnames:
             raise ValueError(f"Input CSV has no header row: {path}")
-        if "content" not in reader.fieldnames:
-            raise ValueError("Input CSV must include a 'content' column.")
+        missing_columns = [column for column in REQUIRED_INPUT_COLUMNS if column not in reader.fieldnames]
+        if missing_columns:
+            expected = ", ".join(REQUIRED_INPUT_COLUMNS)
+            missing = ", ".join(missing_columns)
+            raise ValueError(f"Input CSV must include columns: {expected}. Missing: {missing}.")
 
         rows: List[Dict[str, str]] = []
 
@@ -36,5 +39,4 @@ def write_enriched_csv(path: Path, rows: List[Dict[str, str]]) -> None:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
-
 
